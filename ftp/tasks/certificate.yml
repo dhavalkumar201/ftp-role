@@ -1,3 +1,0 @@
- - name: generate certificate and key
-   become: yes
-   shell: "openssl req -newkey rsa:2048 -nodes -keyout /etc/ssl/private/vsftpd.key -x509 -days 3650 -out /etc/ssl/certs/vsftpd.pem -subj '/C=IN/ST=GJ/L=AHD/O=EIC/OU=PES/CN=eic'"
