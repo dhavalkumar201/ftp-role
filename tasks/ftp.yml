@@ -1,0 +1,43 @@
+---
+#- name: Remove apt lock file
+#  file:
+#    state: absent
+#    path: "/var/lib/dpkg/lock-frontend"
+#  become: true
+#  tags: apt
+
+#################Install vsftpd Service ############################
+
+- name: Install vsftpd
+  #become: yes
+  apt:
+    name: vsftpd
+    state: present
+
+################ Create FTP user ####################################
+
+- name: Add users that are allowed to use the FTP Server
+  become: yes
+  run_once: true
+  user:
+    name: "{{ ftpuser }}"
+    state: present
+    comment: User for ftpserver
+    home: "/home/{{ ftpuser }}/ftp"
+    shell: "/bin/bash"
+    password: "{{ password | password_hash('sha512') }}"
+
+- name: Add content to userlist file
+  copy:
+    dest: "/etc/vsftpd.userlist"
+    content: |
+      {{ ftpuser }}
+
+################# Create FTP home directory #############################
+- name: Create directory "ftp" and set permissions
+  file:
+    path: "/home/{{ ftpuser }}/ftp"
+    state: directory
+    mode: "u=rwx,g=rx,o=rx"
+    owner: "{{ ftpuser }}"
+    group: "{{ ftpuser }}"
